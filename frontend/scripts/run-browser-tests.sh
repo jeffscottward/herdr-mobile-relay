@@ -8,10 +8,10 @@ WEB_ROOT="${1:-dist}"
 
 cd "$FRONTEND_DIR"
 
-# CI runs both engines natively: Ubuntu is a supported `playwright install
-# --with-deps` target for WebKit, whose pinned build is identical to the
-# container's, and Chromium projects use the installed Google Chrome stable. The container paths below remain for hosts where native WebKit
-# cannot work: Fedora (install-deps has no dnf mapping and WebKit crashes on
+# CI runs WebKit natively: Ubuntu is a supported `playwright install
+# --with-deps` target, and the pinned WebKit build is identical to the
+# container's. Chromium projects use the installed Google Chrome stable. The
+# container paths below remain for hosts where native WebKit cannot work: Fedora (install-deps has no dnf mapping and WebKit crashes on
 # ABI mismatch) and any host that opts in with HERDR_WEBKIT_CONTAINER=1.
 CONTAINER_RUNTIME=""
 CONTAINER_ARGS=()
