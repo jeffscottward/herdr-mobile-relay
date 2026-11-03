@@ -105,8 +105,9 @@ async function installation(home: string, patched: boolean): Promise<Record<stri
     const { XCUITestDriver } = await import(entries.xcuitest);
     const driver = new XCUITestDriver();
     assert.deepEqual(driver.mobileInstalledContextContract(), { contract, selector: contract });
+    // A cold Appium start on a slow hosted macOS runner can take longer than 30 s; the listing itself has no network step.
     const selected = JSON.parse(execFileSync(process.execPath, [main, 'driver', 'list', '--installed', '--json'], {
-      env: { ...process.env, APPIUM_HOME: root }, encoding: 'utf8', timeout: 30_000,
+      env: { ...process.env, APPIUM_HOME: root }, encoding: 'utf8', timeout: 120_000,
     }));
     assert.deepEqual(Object.keys(selected), ['xcuitest'], 'Unexpected selected iOS driver');
     assert.equal(selected.xcuitest.pkgName, manifest.packages.xcuitest.name);
