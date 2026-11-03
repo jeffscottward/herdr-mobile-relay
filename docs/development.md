@@ -116,8 +116,12 @@ Backend development uses Go 1.27.3; frontend development uses Node.js
 above). Bun installs the packages and runs the repository's own scripts; Vite,
 ESLint, Vitest and Playwright run on Node, because `bun run` honours their
 `#!/usr/bin/env node` line whenever Node is on `PATH` (without Node it falls
-back to Bun). CI installs both browsers natively (`bun x playwright install
---with-deps chromium webkit`); on Fedora, `install-deps` is unsupported and
+back to Bun). Chromium projects run on the installed Google Chrome
+stable (Playwright channel `chrome`, sandbox on), not Playwright's bundled
+Chromium, which lags Chrome stable security fixes; install it with `bun x
+playwright install chrome` where it is missing. CI installs WebKit natively
+(`bun x playwright install --with-deps webkit`) and current Chrome stable
+(`bun x playwright install --force chrome`); on Fedora, `install-deps` is unsupported and
 native WebKit crashes, so `make frontend-browser` runs WebKit through
 Playwright's official container via podman (Chromium runs natively — its dnf
 dependencies are nspr nss dbus-libs atk at-spi2-atk cups-libs at-spi2-core

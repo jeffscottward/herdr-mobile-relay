@@ -9,8 +9,8 @@ WEB_ROOT="${1:-dist}"
 cd "$FRONTEND_DIR"
 
 # CI runs both engines natively: Ubuntu is a supported `playwright install
-# --with-deps` target, and the pinned browser builds are identical to the
-# container's. The container paths below remain for hosts where native WebKit
+# --with-deps` target for WebKit, whose pinned build is identical to the
+# container's, and Chromium projects use the installed Google Chrome stable. The container paths below remain for hosts where native WebKit
 # cannot work: Fedora (install-deps has no dnf mapping and WebKit crashes on
 # ABI mismatch) and any host that opts in with HERDR_WEBKIT_CONTAINER=1.
 CONTAINER_RUNTIME=""
@@ -41,8 +41,9 @@ if ! [[ "$WEBKIT_WORKERS" =~ ^[1-9][0-9]*$ ]]; then
     exit 1
 fi
 
-echo "Installing Chromium browser files without apt dependencies."
-bun x playwright install chromium
+# Chromium projects use the system Google Chrome (channel 'chrome' in
+# playwright.config.ts), so no bundled Chromium is downloaded here.
+echo "Running Chromium projects on the system Google Chrome."
 HERDR_WEB_ROOT="$WEB_ROOT" bun x playwright test --project=chromium-mobile
 
 # WebKit stays on the container image's own Node: it ships node and npx, and

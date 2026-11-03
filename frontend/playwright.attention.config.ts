@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import { resolve } from 'node:path';
+import { systemChrome } from './playwright.chrome';
 
 const webRoot = resolve(process.env.HERDR_WEB_ROOT || 'dist');
 const webkitEndpoint = process.env.HERDR_WEBKIT_WS_ENDPOINT;
@@ -22,7 +23,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'chromium-attention', use: { ...devices['Pixel 7'] } },
+    { name: 'chromium-attention', use: { ...devices['Pixel 7'], ...systemChrome } },
     {
       name: 'webkit-attention',
       use: {

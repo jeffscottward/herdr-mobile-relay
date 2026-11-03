@@ -127,7 +127,17 @@ jobs:
           mkdir -p "$HOME/.cache/playwright-apt/partial"
           printf 'Dir::Cache::Archives "%s";\nAPT::Keep-Downloaded-Packages "true";\n' "$HOME/.cache/playwright-apt" \
             | sudo tee /etc/apt/apt.conf.d/90-playwright-archives >/dev/null
-      - run: cd frontend && bun x playwright install --with-deps chromium webkit
+      - run: cd frontend && bun x playwright install --with-deps webkit
+      # Chromium projects run on Google Chrome stable (channel 'chrome' in
+      # frontend/playwright.chrome.ts), not Playwright's bundled Chromium,
+      # which lags Chrome stable security fixes. --force replaces the runner
+      # image's preinstalled Chrome with the current stable package.
+      - name: Install current Google Chrome stable
+        run: |
+          set -euo pipefail
+          cd frontend
+          bun x playwright install --force chrome
+          /opt/google/chrome/chrome --version
       - name: Let the cache read the browser system packages
         run: sudo chown -R "$(id -u):$(id -g)" "$HOME/.cache/playwright-apt"
       - if: steps.playwright-apt.outputs.cache-hit != 'true'

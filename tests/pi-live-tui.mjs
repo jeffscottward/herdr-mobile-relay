@@ -29,7 +29,7 @@ async function qualifyBrowser(work, onReady) {
     while (!config && Date.now() < deadline && !exited) { try { config = JSON.parse(await readFile(join(work, 'browser-config.json'), 'utf8')); } catch { await sleep(20); } }
     assert(config, 'Private encrypted relay fixture did not start');
     const { chromium, devices } = await import(pathToFileURL(join(repo, 'frontend/node_modules/playwright/index.mjs')));
-    browser = await chromium.launch({ headless: true, env: { PATH: process.env.PATH, HOME: join(work, 'home'), TMPDIR: work } });
+    browser = await chromium.launch({ headless: true, channel: 'chrome', chromiumSandbox: true, env: { PATH: process.env.PATH, HOME: join(work, 'home'), TMPDIR: work } });
     const context = await browser.newContext({ ...devices['Pixel 7'], serviceWorkers: 'block' });
     await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
     await context.addInitScript(config => {
