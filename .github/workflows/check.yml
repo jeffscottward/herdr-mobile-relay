@@ -112,7 +112,7 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
+          key: playwright-webkit-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
       # The Ubuntu mirror has taken from 30 s to more than 44 min to serve the
       # WebKit system packages, so the downloaded packages are cached as well.
       # They are saved right after the install, even if a later check fails.
@@ -130,8 +130,10 @@ jobs:
       - run: cd frontend && bun x playwright install --with-deps webkit
       # Chromium projects run on Google Chrome stable (channel 'chrome' in
       # frontend/playwright.chrome.ts), not Playwright's bundled Chromium,
-      # which lags Chrome stable security fixes. --force replaces the runner
-      # image's preinstalled Chrome with the current stable package.
+      # which lags Chrome stable security fixes. The step installs the latest
+      # Chrome stable .deb, which upgrades the runner image's preinstalled
+      # Chrome when it is older. --force only matters outside CI, where
+      # Playwright skips an already installed Chrome.
       - name: Install current Google Chrome stable
         run: |
           set -euo pipefail
