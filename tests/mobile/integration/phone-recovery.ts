@@ -85,8 +85,10 @@ const POISON_HTML = '<!doctype html><script src="/herdr-bootstrap.js"></script>\
 const POISON_JS = "export const fixturePoison = 'not the canonical module';";
 const EXPECTED_CSP = "default-src 'self'; connect-src 'self' https: wss:; img-src 'self' blob: data:; media-src blob:; style-src 'self'; style-src-attr 'unsafe-inline'; script-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
 const engines = [
-  { name: 'chromium' as const, browser: chromium, device: devices['Pixel 7'] },
-  { name: 'webkit' as const, browser: webkit, device: devices['iPhone 15'] },
+  // Chromium runs on the system Google Chrome stable build with its sandbox on,
+  // not Playwright's bundled Chromium.
+  { name: 'chromium' as const, browser: chromium, device: devices['Pixel 7'], launch: { channel: 'chrome', chromiumSandbox: true } },
+  { name: 'webkit' as const, browser: webkit, device: devices['iPhone 15'], launch: {} },
 ];
 
 function option(name: string): string | undefined {
@@ -184,6 +186,7 @@ async function waitForFault(
 async function openSession(engine: typeof engines[number], profile: string, appOrigin: string): Promise<Session> {
   await mkdir(resolve(profile, '..'), { recursive: true, mode: 0o700 });
   const context = await engine.browser.launchPersistentContext(profile, {
+    ...engine.launch,
     ...engine.device,
     headless: true,
     ignoreHTTPSErrors: true,

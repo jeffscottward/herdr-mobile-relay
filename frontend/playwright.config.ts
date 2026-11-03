@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import { resolve } from 'node:path';
+import { systemChrome } from './playwright.chrome';
 
 const webRoot = resolve(process.env.HERDR_WEB_ROOT || 'dist');
 
@@ -31,7 +32,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'chromium-mobile', use: { ...devices['Pixel 7'] } },
+    // System Google Chrome stable with its sandbox on; see playwright.chrome.ts.
+    { name: 'chromium-mobile', use: { ...devices['Pixel 7'], ...systemChrome } },
     { name: 'webkit-mobile', use: { ...devices['iPhone 15'] } },
   ],
   webServer: {
