@@ -105,7 +105,7 @@ jobs:
           cache: true
       - run: bun install --frozen-lockfile --cwd frontend
       # Native browsers instead of the multi-GB Playwright container image:
-      # the binaries are the same Playwright-pinned builds either way, and no
+      # the WebKit binary is the same Playwright-pinned build either way, and no
       # assertion in the suite depends on the image's font set. Ubuntu is a
       # supported install-deps target; Fedora is not, which is why the
       # container path in run-browser-tests.sh stays for local Fedora runs.
