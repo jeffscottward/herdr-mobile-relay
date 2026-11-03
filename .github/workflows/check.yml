@@ -105,14 +105,14 @@ jobs:
           cache: true
       - run: bun install --frozen-lockfile --cwd frontend
       # Native browsers instead of the multi-GB Playwright container image:
-      # the binaries are the same Playwright-pinned builds either way, and no
+      # the WebKit binary is the same Playwright-pinned build either way, and no
       # assertion in the suite depends on the image's font set. Ubuntu is a
       # supported install-deps target; Fedora is not, which is why the
       # container path in run-browser-tests.sh stays for local Fedora runs.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
+          key: playwright-webkit-ubuntu-24.04-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
       # The Ubuntu mirror has taken from 30 s to more than 44 min to serve the
       # WebKit system packages, so the downloaded packages are cached as well.
       # They are saved right after the install, even if a later check fails.
@@ -127,7 +127,19 @@ jobs:
           mkdir -p "$HOME/.cache/playwright-apt/partial"
           printf 'Dir::Cache::Archives "%s";\nAPT::Keep-Downloaded-Packages "true";\n' "$HOME/.cache/playwright-apt" \
             | sudo tee /etc/apt/apt.conf.d/90-playwright-archives >/dev/null
-      - run: cd frontend && bun x playwright install --with-deps chromium webkit
+      - run: cd frontend && bun x playwright install --with-deps webkit
+      # Chromium projects run on Google Chrome stable (channel 'chrome' in
+      # frontend/playwright.chrome.ts), not Playwright's bundled Chromium,
+      # which lags Chrome stable security fixes. The step installs the latest
+      # Chrome stable .deb, which upgrades the runner image's preinstalled
+      # Chrome when it is older. --force only matters outside CI, where
+      # Playwright skips an already installed Chrome.
+      - name: Install current Google Chrome stable
+        run: |
+          set -euo pipefail
+          cd frontend
+          bun x playwright install --force chrome
+          /opt/google/chrome/chrome --version
       - name: Let the cache read the browser system packages
         run: sudo chown -R "$(id -u):$(id -g)" "$HOME/.cache/playwright-apt"
       - if: steps.playwright-apt.outputs.cache-hit != 'true'

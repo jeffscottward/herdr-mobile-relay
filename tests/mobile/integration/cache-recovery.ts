@@ -143,7 +143,8 @@ async function main(): Promise<void> {
   let browser: Browser | undefined;
   try {
     info = await waitForInfo(infoFile);
-    browser = await chromium.launch({ headless: true });
+    // System Google Chrome stable with its sandbox on, not bundled Chromium.
+    browser = await chromium.launch({ headless: true, channel: 'chrome', chromiumSandbox: true });
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
     const page = await context.newPage();
     await page.goto(info.app_url, { waitUntil: 'networkidle' });

@@ -93,7 +93,7 @@ test('the error document offers a same-origin home link without executing the ap
   await expect(page.locator('[data-app-build]')).toHaveAttribute('data-app-build', release.build);
 });
 
-test('normal HTTP caching revalidates unchanged bytes and replaces a repaired wrong response', async ({ playwright, browserName }) => {
+test('normal HTTP caching revalidates unchanged bytes and replaces a repaired wrong response', async ({ playwright, browserName, channel, launchOptions }) => {
   let body = '<!doctype html><script src="/herdr-bootstrap.js"></script>\n';
   let missing = false;
   const requests: Array<{ conditional: string; status: number }> = [];
@@ -120,7 +120,11 @@ test('normal HTTP caching revalidates unchanged bytes and replaces a repaired wr
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     const address = server.address();
     if (!address || typeof address === 'string') throw new Error('Cache fixture did not bind a loopback port');
+    // A direct launch does not inherit the project's browser, so pass the
+    // project's channel and launch options (system Chrome, sandbox on).
     context = await playwright[browserName].launchPersistentContext(profile, {
+      ...launchOptions,
+      channel,
       ...(browserName === 'chromium' ? devices['Pixel 7'] : devices['iPhone 15']),
       headless: true,
       serviceWorkers: 'block',
