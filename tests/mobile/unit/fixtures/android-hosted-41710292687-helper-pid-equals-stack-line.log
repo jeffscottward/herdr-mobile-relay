@@ -1,0 +1,38 @@
+         1793741839.894  5823  5823 D CompatChangeReporter: Compat change id reported: 242716250; UID 90002; state: ENABLED
+         1793741839.939  5823  5823 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+         1793741839.939  5823  5823 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+         1793741840.009  5823  5823 I LoadedApk: No resource references to update in package com.google.android.trichromelibrary
+         1793741840.010  5823  5823 I cr_SplitCompatApp: version=131.0.6778.200 (677820038) minSdkVersion=29 isBundle=true processName=com.android.chrome:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:2 isIsolatedProcess=true
+         1793741840.034  5823  5823 W SystemServiceRegistry: No service published for: uimode
+         1793741840.063  5848  5848 I HerdrMeasure: 41710292687 START
+         1793741840.094  5823  5823 I cr_ChildProcessService: Creating new ChildProcessService pid=5823
+         1793741840.280  5823  5852 I cr_LibraryLoader: Successfully loaded native library
+         1793741840.303  5823  5852 I cr_CachingUmaRecorder: Flushed 3 samples from 3 histograms, 0 samples were dropped.
+         1793741840.472  5823  5823 W ThreadPoolForeg: type=1400 audit(0.0:213): avc:  denied  { setattr } for  name="model-info.pb" dev="dm-46" ino=369193 scontext=u:r:isolated_app:s0:c512,c768 tcontext=u:object_r:app_data_file:s0:c145,c256,c512,c768 tclass=file permissive=0
+         1793741840.492  5823  5823 W ThreadPoolForeg: type=1400 audit(0.0:214): avc:  denied  { setattr } for  name="model.tflite" dev="dm-46" ino=369194 scontext=u:r:isolated_app:s0:c512,c768 tcontext=u:object_r:app_data_file:s0:c145,c256,c512,c768 tclass=file permissive=0
+         1793741840.527  5823  5852 I chromium: [INFO:child_process_service.cc(72)] ChildProcessService: Exiting child process.
+         1793741840.569   562  1058 I ActivityManager: Process com.android.chrome:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:2 (pid 5823) has died: vis BTOP
+         1793741840.570   562   601 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_90002/pid_5823
+         1793741840.571  5400  5400 I Zygote  : Process 5823 exited cleanly (0)
+         1793741840.572  5361  5361 W chromium: [WARNING:compositor_view.cc(344)] Child process died (type=6) pid=5823)
+         1793741934.654  1339  1339 W View    : requestLayout() improperly called by android.widget.LinearLayout{ce65823 V.E...... ......ID 115,0-965,116 #7f0b0281 app:id/0_resource_name_obfuscated} during layout: running second layout pass
+         1793741945.132   562  1547 W ActivityManager: pid 562 system sent binder code 7 with flags 1 to frozen apps and got error -32
+         1793741945.132   562  1547 W WindowManager: Exception thrown during dispatchAppVisibility Window{1eca2fb u0 com.android.chrome/org.chromium.chrome.browser.webapps.WebappActivity EXITING}
+         1793741945.132   562  1547 W WindowManager: android.os.DeadObjectException
+         1793741945.132   562  1547 W WindowManager: 	at android.os.BinderProxy.transactNative(Native Method)
+         1793741945.132   562  1547 W WindowManager: 	at android.os.BinderProxy.transact(BinderProxy.java:586)
+         1793741945.132   562  1547 W WindowManager: 	at android.view.IWindow$Stub$Proxy.dispatchAppVisibility(IWindow.java:553)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.WindowState.sendAppVisibilityToClients(WindowState.java:3253)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.WindowContainer.sendAppVisibilityToClients(WindowContainer.java:1289)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.WindowToken.setClientVisible(WindowToken.java:403)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.ActivityRecord.setClientVisible(ActivityRecord.java:7166)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.ActivityRecord.postApplyAnimation(ActivityRecord.java:5881)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:5823)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.Transition.finishTransition(Transition.java:1286)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.TransitionController.finishTransition(TransitionController.java:937)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.finishTransition(WindowOrganizerController.java:494)
+         1793741945.132   562  1547 W WindowManager: 	at android.window.IWindowOrganizerController$Stub.onTransact(IWindowOrganizerController.java:289)
+         1793741945.132   562  1547 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.onTransact(WindowOrganizerController.java:204)
+         1793741945.132   562  1547 W WindowManager: 	at android.os.Binder.execTransactInternal(Binder.java:1505)
+         1793741945.132   562  1547 W WindowManager: 	at android.os.Binder.execTransact(Binder.java:1444)
+         1793741968.372 14196 14196 I HerdrMeasure: 41710292687 END

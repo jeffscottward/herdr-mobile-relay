@@ -222,10 +222,12 @@ export interface AndroidNormalRetirement {
 }
 
 // App UIDs share the PID number range, so a number that Android labels as a UID or app ID is not a reference to a process.
+// Source positions in Java stack frames ("ActivityRecord.java:5823") and Chromium log tags ("file.cc(72)") are line numbers, not PIDs.
 function mentionsProcessId(record: LogRecord, pid: string): boolean {
   const references = (record.tag === 'ActivityManager'
     ? record.message.replace(/^(Killing [1-9]\d*:[^/\s]+)\/u0[a-z0-9]+(?:-\d+)?(?=\s)/u, '$1')
-    : record.message).replace(/(\b(?:appid=|UID:? \[?|uid(?: = |=| )|uids=\{|uid\/pid:|A=|app:))[1-9]\d*/gu, '$1');
+    : record.message).replace(/(\b(?:appid=|UID:? \[?|uid(?: = |=| )|uids=\{|uid\/pid:|A=|app:))[1-9]\d*/gu, '$1')
+    .replace(/(\([\w$]+\.(?:java|kt)):\d+\)/gu, '$1)').replace(/(\b[\w-]+\.(?:cc|h|mm))\(\d+\)/gu, '$1');
   return new RegExp(`\\b${pid}\\b`, 'u').test(references);
 }
 

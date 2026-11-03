@@ -610,6 +610,48 @@ androidEventTests.push(['hosted 40427620028 helpers already running at START ret
   }
 }]);
 
+androidEventTests.push(['hosted 41710292687 helper whose PID equals a source line number retires normally and still rejects adverse mentions', async () => {
+  const log = await readFile(new URL('./fixtures/android-hosted-41710292687-helper-pid-equals-stack-line.log', import.meta.url), 'utf8');
+  const helper = 'com.android.chrome:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:2';
+  const system = { '562': 'system_server', '5361': 'com.android.chrome', '5400': 'com.android.chrome_zygote' };
+  const measureStack = (value: string) => {
+    const before = snapshot('start', { ...system, '5823': helper });
+    const after = snapshot('end', system);
+    before.measurement!.id = '41710292687';
+    after.measurement!.id = '41710292687';
+    return measuredAndroidEvents(value, before, after, []);
+  };
+  const retired = (value: string) => measureStack(value).normalRetirements.some((retirement) => retirement.pid === '5823');
+  const line = (pattern: string) => log.split('\n').find((entry) => entry.includes(pattern))!;
+  const frame = line('(ActivityRecord.java:5823)');
+  const exit = line('Process 5823 exited cleanly (0)');
+  const startMarker = line('41710292687 START');
+  assert.ok(frame && exit && startMarker);
+  const result = measureStack(log);
+  assert.deepEqual(result.issues, []);
+  assert.deepEqual(result.fatalEvents, []);
+  assert.ok(retired(log));
+  for (const proof of result.normalRetirements[0].proof) assert.equal(log.split('\n')[proof.lineNumber - 1], proof.line);
+  assert.ok(retired(log.replace(frame, `${frame}\n         1793741945.133  1198  1849 W GLSUser : \tat etvr.s(Native.kt:5823)`)), 'Kotlin frame');
+  assert.ok(retired(log.replace(frame, `${frame}\n         1793741945.133  5361  5361 W chromium: [WARNING:tab_model.cc(5823)] unrelated warning`)), 'Chromium source tag');
+  const after = (record: string) => log.replace(exit, `${exit}\n         1793741840.600 ${record}`);
+  const during = (record: string) => log.replace(startMarker, `${startMarker}\n         1793741840.100 ${record}`);
+  for (const [name, value] of [
+    ['a crash report naming the PID', after(' 5361  5361 W chromium: Renderer process crashed pid=5823')],
+    ['a signal sent to the PID', after('  562   562 I Process : Sending signal. PID: 5823 SIG: 9')],
+    ['a low-memory kill', after(`  562   562 I lowmemorykiller: Kill '${helper}' (5823), uid 90002, oom_score_adj 0`)],
+    ['a stack frame that also names the PID', log.replace(frame, `${frame}\n         1793741945.133   562  1547 W WindowManager: \tat com.android.server.wm.Pid.kill(Pid.java:12) pid 5823`)],
+    ['a force stop of Chrome while the helper ran', during('  562  1759 I ActivityManager: Force stopping com.android.chrome appid=10145 user=0: from pid 9999')],
+    ['a package change of Chrome while the helper ran', during('  562  1759 I PackageManager: Updating package com.android.chrome')],
+    ['a restart of the PID inside the measurement', during(`  562   590 I ActivityManager: Start proc 5823:${helper}/u0ai2 for  {com.android.chrome/org.chromium.content.app.SandboxedProcessService0:2}`)],
+    ['an unlabelled death record', log.replace('has died: vis BTOP', 'has died: crashed')],
+  ] as [string, string][]) {
+    assert.notEqual(value, log, name);
+    assert.ok(!retired(value), name);
+    assert.ok(measureStack(value).fatalEvents.some((event) => event.includes('(pid 5823)')), name);
+  }
+}]);
+
 androidEventTests.push(['synthetic system-reaped helper admits a missing child exit or the kill signal only with the reaping record', async () => {
   const killed = exit.replace('cleanly (0)', 'due to signal 9 (Killed)');
   const quickKilled = quickExit.replace('cleanly (0)', 'due to signal 9 (Killed)');
